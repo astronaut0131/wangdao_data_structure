@@ -26,7 +26,7 @@ NodeType* generate_common_list(LinkedList<int>& A, LinkedList<int>& B) {
 
 int main() {
 	vector<int> v1 = {1,3,5,6,6,7,9,10};
-	vector<int> v2 = {0,2,4,5,6,8,9,11,12};
+	vector<int> v2 = {0,2,4,5,6,6,8,9,11,12};
 	LinkedList<int> linked_list(false);
 	LinkedList<int> A(v1,false);
 	LinkedList<int> B(v2,false);
