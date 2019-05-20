@@ -18,7 +18,8 @@ void remove_dup(NodeType* L) {
 int main() {
 	vector<int> v = {7,10,10,21,30,42,42,42,51,70};
 	// without head
-	LinkedList<int> linked_list(v,false);
+	SingleLinkedList<int> linked_list(false);
+	linked_list.init(v);
 	remove_dup(linked_list.get_head());
 	cout << linked_list;
 	return 0;

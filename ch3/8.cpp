@@ -18,18 +18,28 @@ NodeType* find_common(NodeType* L1,NodeType* L2) {
 }
 int main() {
 	vector<int> v = {1,2,3};
-	// common should be destructed after L1,L2
-	// note the LIFO rule of stack
-	LinkedList<int> common(v,false);
+	SingleLinkedList<int> common(false);
+	common.init(v);
 	// no head
-	LinkedList<int> L1(v,false);
+	SingleLinkedList<int> L1(false);
 	v = {3,2,1};
-	LinkedList<int> L2(v,false);
-	// common part
+	L1.init(v);
+	SingleLinkedList<int> L2(false);
 	v = {4,5,6};
-	L1.concatenate(common);
-	L2.concatenate(common);
+	L2.init(v);
+	auto L1_tail = L1.get_head();
+	auto L2_tail = L2.get_head();
+	while (L1_tail->next != nullptr) {
+		L1_tail = L1_tail->next;
+	}
+	while (L2_tail->next != nullptr) {
+		L2_tail = L2_tail->next;
+	}
+	L1_tail->next = common.get_head();
+	L2_tail->next = common.get_head();
 	auto result = find_common(L1.get_head(),L2.get_head());
 	print_linked_list<int>(result);
+	L1_tail->next = nullptr;
+	L2_tail->next = nullptr;
 	return 0;
 }

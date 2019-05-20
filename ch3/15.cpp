@@ -1,7 +1,7 @@
 #include "LinkedList.hpp"
 using NodeType = LNode<int>;
 
-void find_intersection(LinkedList<int>& A, LinkedList<int>& B) {
+void find_intersection(SingleLinkedList<int>& A, SingleLinkedList<int>& B) {
 	auto p1 = A.get_head()->next;
 	auto p2 = B.get_head()->next;
 	auto prev = A.get_head();
@@ -25,8 +25,10 @@ void find_intersection(LinkedList<int>& A, LinkedList<int>& B) {
 int main() {
 	vector<int> v1 = {1,3,5,6,7,9,10};
 	vector<int> v2 = {0,2,4,5,6,8,9,11,12};
-	LinkedList<int> A(v1);
-	LinkedList<int> B(v2);
+	SingleLinkedList<int> A;
+	A.init(v1);
+	SingleLinkedList<int> B;
+	B.init(v2);
 	find_intersection(A,B);
 	cout << A << endl;
 	return 0;

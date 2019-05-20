@@ -1,7 +1,7 @@
 #include "LinkedList.hpp"
 using NodeType = LNode<int>;
 
-bool is_subsequence(LinkedList<int>& A, LinkedList<int>& B) {
+bool is_subsequence(SingleLinkedList<int>& A, SingleLinkedList<int>& B) {
 	auto p1 = A.get_head()->next;
 	auto p2 = B.get_head()->next;
 	while (p1 && p2) {
@@ -25,13 +25,17 @@ bool is_subsequence(LinkedList<int>& A, LinkedList<int>& B) {
 int main() {
 	vector<int> v1 = {1,2,3,4,5};
 	vector<int> v2 = {0,2,4,5,6,1,2,3,4,5,1,2,3,4,8,9,11,12};
-	LinkedList<int> A(v1);
-	LinkedList<int> B(v2);
+	SingleLinkedList<int> A;
+	A.init(v1);
+	SingleLinkedList<int> B;
+	B.init(v2);
 	cout << is_subsequence(A,B) << endl;
 	v1 = {1,2,3,4};
 	v2 = {1,2,3,1,2,3,5,1,1,2,3,5,4};
-	LinkedList<int> C(v1);
-	LinkedList<int> D(v2);
+	SingleLinkedList<int> C;
+	C.init(v1);
+	SingleLinkedList<int> D;
+	D.init(v2);
 	cout << is_subsequence(C,D) << endl;
 	return 0;
 }

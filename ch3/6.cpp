@@ -20,7 +20,8 @@ void sort_list(NodeType* head) {
 int main() {
 	vector<int> v = {1,1,2,3,4,5,1};
 //	vector<int> v = {0};
-	LinkedList<int> linked_list(v);
+	SingleLinkedList<int> linked_list;
+	linked_list.init(v);
 	sort_list(linked_list.get_head());
 	cout << linked_list << endl;
 	return 0;

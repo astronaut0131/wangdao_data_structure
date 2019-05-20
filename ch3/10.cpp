@@ -25,9 +25,10 @@ void split_list(NodeType* L, NodeType* A, NodeType* B) {
 
 int main() {
 	vector<int> v = {1,1,2,3,4,5,1};
-	LinkedList<int> linked_list(v);
-	LinkedList<int> A;
-	LinkedList<int> B;
+	SingleLinkedList<int> linked_list;
+	linked_list.init(v);
+	SingleLinkedList<int> A;
+	SingleLinkedList<int> B;
 	split_list(linked_list.get_head(),A.get_head(),B.get_head());
 	cout << A;
 	cout << B;

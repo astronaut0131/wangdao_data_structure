@@ -48,22 +48,62 @@ struct DoubleLNode {
 	DoubleLNode(ElemType data):data(data),next(nullptr),prev(nullptr) {}
 };
 
-template<class ElemType>
+template<template <class...> class Node, class ElemType>
 class LinkedList{
 public:
-	using NodeType = LNode<ElemType>;
-	// get an empty linked list with a dummy head
-	LinkedList(bool has_dummy_head = true):has_dummy_head_(has_dummy_head),is_cyclic_(false) {
-		if (has_dummy_head)
+	using NodeType = Node<ElemType>;
+	LinkedList(bool has_dummy_head = true, bool is_cyclic = false):has_dummy_head_(has_dummy_head),is_cyclic_(is_cyclic) {
+		if (has_dummy_head_) {
 			head_ = generate_dummy_head();
-		else
+		} else {
 			head_ = nullptr;
+		}
 	}
-	LinkedList(vector<ElemType>& v, bool has_dummy_head = true, bool is_cyclic = false):has_dummy_head_(has_dummy_head),
-	is_cyclic_(is_cyclic) {
-		if (v.size() == 0) throw runtime_error("empty vector...");
+	void init(const vector<ElemType> &v) {
+		NodeType* last_node = list_set_up(v);
+		if (is_cyclic_) {
+			cyclic_set_up(last_node);
+		}
+	}
+	NodeType* get_head() {
+		return head_;
+	}
+	void set_head(NodeType* new_head) {
+		if (new_head == nullptr) has_dummy_head_ = false;
+		head_ = new_head;
+	}
+	~LinkedList() {
+		auto p = head_;
+		if (!is_cyclic_) {
+			while (p != nullptr) {
+				auto next_p = p->next;
+				delete p;
+				p = next_p;
+			}
+		} else {
+			if (!p) return;
+			p = head_->next;
+			if (p == nullptr) {
+				delete head_;
+				return;
+			}
+			do{
+				auto next_p = p->next;
+				delete p;
+				p = next_p;
+			}while (p != head_);
+			delete head_;
+		}
+	}
+
+protected:
+	NodeType* generate_dummy_head() {
+		auto dummy_head = new NodeType(ElemType());
+		return dummy_head;
+	}
+	virtual NodeType* list_set_up(const vector<ElemType> &v) {
 		NodeType* node;
-		if (has_dummy_head) {
+		if (has_dummy_head_) {
 			head_ = generate_dummy_head();
 			auto p = head_;
 			for (auto &item : v) {
@@ -80,31 +120,11 @@ public:
 				p = p->next;
 			}
 		}
-		if (is_cyclic_) {
-			node->next = head_;
-		}
+		// return the last node for cyclic set up
+		return node;
 	}
-	NodeType* get_head() {
-		return head_;
-	}
-	void set_head(NodeType* new_head) {
-		head_ = new_head;
-	}
-	LinkedList& concatenate(LinkedList& other) {
-		if (is_cyclic_) {
-			throw runtime_error("do not support cyclic list concatenation for now!");
-		}
-		auto p = has_dummy_head_ ? head_->next : head_;
-		while (p->next != nullptr) {
-			p = p->next;
-		}
-		p->next = other.has_dummy_head_ ? other.get_head()->next : other.get_head();
-		p = p->next;
-		while (p != nullptr) {
-			node_shared_.insert(p);
-			p = p->next;
-		}
-		return *this;
+	virtual void cyclic_set_up(NodeType* node) {
+		node->next = head_;
 	}
 	friend ostream& operator<<(ostream& os, LinkedList& linked_list) {
 		auto p = (linked_list.has_dummy_head_ ? linked_list.head_->next : linked_list.head_);
@@ -112,66 +132,44 @@ public:
 			os << "empty linked list" << endl;
 			return os;
 		}
+		bool flag = false;
 		if (!linked_list.is_cyclic_) {
 			while (p != nullptr) {
-				os << p->data << " ";
+				os << (flag ? "->" : "") << p->data;
 				p = p->next;
+				flag = true;
 			}
 		} else {
 			do {
-				os << p->data << " ";
+				os << (flag ? "->" : "") << p->data;
 				p = p->next;
+				flag = true;
 			} while (p != linked_list.head_);
 		}
 		os << endl;
 		return os;
 	}
-	~LinkedList() {
-		auto p = head_;
-		if (!is_cyclic_) {
-			while (p != nullptr) {
-				auto next_p = p->next;
-				if (node_shared_.find(p) == node_shared_.end()) {
-					delete p;
-				}
-				p = next_p;
-			}
-		} else {
-			p = head_->next;
-			if (p == nullptr) {
-				delete head_;
-				return;
-			}
-			do{
-				auto next_p = p->next;
-				delete p;
-				p = next_p;
-			}while (p != head_);
-			delete head_;
-		}
-	}
-private:
-	NodeType* generate_dummy_head() {
-		auto dummy_head = new NodeType(ElemType());
-		return dummy_head;
-	}
 	bool is_cyclic_;
 	bool has_dummy_head_;
 	NodeType* head_;
-	unordered_set<NodeType*> node_shared_;
 };
 
 template<class ElemType>
-class DoubleLinkedList{
-	using NodeType = DoubleLNode<ElemType>;
+class SingleLinkedList:public LinkedList<LNode,ElemType>{
 public:
-	DoubleLinkedList(vector<ElemType>& v, bool has_dummy_head = true,bool is_cyclic = false):has_dummy_head_(has_dummy_head),
-	is_cyclic_(is_cyclic) {
-		if (v.size() == 0) throw runtime_error("empty vector...");
+	SingleLinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedList<LNode,ElemType>(has_dummy_head,is_cyclic){}
+};
+
+template<class ElemType>
+class DoubleLinkedList:public LinkedList<DoubleLNode,ElemType>{
+public:
+	using NodeType = DoubleLNode<ElemType>;
+	DoubleLinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedList<DoubleLNode,ElemType>(has_dummy_head,is_cyclic){}
+private:	
+	virtual NodeType* list_set_up(const vector<ElemType> &v) override{
 		NodeType* node;
-		if (has_dummy_head) {
-			head_ = generate_dummy_head();
-			auto p = head_;
+		if (this->has_dummy_head_) {
+			auto p = this->head_;
 			for (auto &item : v) {
 				node = new NodeType(item);
 				p->next = node;
@@ -179,8 +177,8 @@ public:
 				p = p->next;
 			}
 		} else {
-			head_ = new NodeType(v[0]);
-			auto p = head_;
+			this->head_ = new NodeType(v[0]);
+			auto p = this->head_;
 			for (auto it = v.begin()+1; it != v.end(); it++) {
 				node = new NodeType(*it);
 				p->next = node;
@@ -188,65 +186,215 @@ public:
 				p = p->next;
 			}
 		}
-		if (is_cyclic_) {
-			head_->prev = node;
-			node->next = head_;
-		}
+		// return the last node for cyclic set up
+		return node;
 	}
-	NodeType* get_head() const{
-		return head_;
+	virtual void cyclic_set_up(NodeType* node) override{
+		this->head_->prev = node;
+		node->next = this->head_;
 	}
-	void set_head(NodeType* new_head) {
-		head_ = new_head;
-	}
-	friend ostream& operator<<(ostream& os, DoubleLinkedList& linked_list) {
-		auto p = linked_list.has_dummy_head_ ? linked_list.head_->next : linked_list.head_;
-		if (p == nullptr) {
-			os << "empty linked list" << endl;
-			return os;
-		}
-		if (!linked_list.is_cyclic_) {
-			while (p != nullptr) {
-				os << p->data << " ";
-				p = p->next;
-			}
-		} else {
-			do {
-				os << p->data << " ";
-				p = p->next;
-			} while (p != linked_list.head_);
-		}
-		os << endl;
-		return os;
-	}
-	~DoubleLinkedList() {
-		auto p = head_;
-		if (!is_cyclic_) {
-			while (p != nullptr) {
-				auto next_p = p->next;
-				delete p;
-				p = next_p;
-			}
-		} else {
-			p = head_->next;
-			if (p == nullptr) {
-				delete head_;
-				return;
-			}
-			do{
-				auto next_p = p->next;
-				delete p;
-				p = next_p;
-			}while (p != head_);
-			delete head_;
-		}
-	}
-private:
-	NodeType* generate_dummy_head() {
-		NodeType* dummy_head = new NodeType(ElemType());
-		return dummy_head;
-	}
-	bool has_dummy_head_;
-	bool is_cyclic_;
-	NodeType* head_;
 };
+// template<class ElemType>
+// class LinkedList{
+// public:
+// 	using NodeType = LNode<ElemType>;
+// 	// get an empty linked list with a dummy head
+// 	LinkedList(bool has_dummy_head = true):has_dummy_head_(has_dummy_head),is_cyclic_(false) {
+// 		if (has_dummy_head)
+// 			head_ = generate_dummy_head();
+// 		else
+// 			head_ = nullptr;
+// 	}
+// 	LinkedList(vector<ElemType>& v, bool has_dummy_head = true, bool is_cyclic = false):has_dummy_head_(has_dummy_head),
+// 	is_cyclic_(is_cyclic) {
+// 		if (v.size() == 0) throw runtime_error("empty vector...");
+// 		NodeType* node;
+// 		if (has_dummy_head) {
+// 			head_ = generate_dummy_head();
+// 			auto p = head_;
+// 			for (auto &item : v) {
+// 				node = new NodeType(item);
+// 				p->next = node;
+// 				p = p->next;
+// 			}
+// 		} else {
+// 			head_ = new NodeType(v[0]);
+// 			auto p = head_;
+// 			for (auto it = v.begin()+1; it != v.end(); it++) {
+// 				node = new NodeType(*it);
+// 				p->next = node;
+// 				p = p->next;
+// 			}
+// 		}
+// 		if (is_cyclic_) {
+// 			node->next = head_;
+// 		}
+// 	}
+// 	NodeType* get_head() {
+// 		return head_;
+// 	}
+// 	void set_head(NodeType* new_head) {
+// 		if (new_head == nullptr) has_dummy_head_ = false;
+// 		head_ = new_head;
+// 	}
+// 	LinkedList& concatenate(LinkedList& other) {
+// 		if (is_cyclic_) {
+// 			throw runtime_error("do not support cyclic list concatenation for now!");
+// 		}
+// 		auto p = has_dummy_head_ ? head_->next : head_;
+// 		while (p->next != nullptr) {
+// 			p = p->next;
+// 		}
+// 		p->next = other.has_dummy_head_ ? other.get_head()->next : other.get_head();
+// 		p = p->next;
+// 		while (p != nullptr) {
+// 			node_shared_.insert(p);
+// 			p = p->next;
+// 		}
+// 		return *this;
+// 	}
+// 	friend ostream& operator<<(ostream& os, LinkedList& linked_list) {
+// 		auto p = (linked_list.has_dummy_head_ ? linked_list.head_->next : linked_list.head_);
+// 		if (p == nullptr) {
+// 			os << "empty linked list" << endl;
+// 			return os;
+// 		}
+// 		if (!linked_list.is_cyclic_) {
+// 			while (p != nullptr) {
+// 				os << p->data << " ";
+// 				p = p->next;
+// 			}
+// 		} else {
+// 			do {
+// 				os << p->data << " ";
+// 				p = p->next;
+// 			} while (p != linked_list.head_);
+// 		}
+// 		os << endl;
+// 		return os;
+// 	}
+// 	~LinkedList() {
+// 		auto p = head_;
+// 		if (!is_cyclic_) {
+// 			while (p != nullptr) {
+// 				auto next_p = p->next;
+// 				if (node_shared_.find(p) == node_shared_.end()) {
+// 					delete p;
+// 				}
+// 				p = next_p;
+// 			}
+// 		} else {
+// 			if (!p) return;
+// 			p = head_->next;
+// 			if (p == nullptr) {
+// 				delete head_;
+// 				return;
+// 			}
+// 			do{
+// 				auto next_p = p->next;
+// 				delete p;
+// 				p = next_p;
+// 			}while (p != head_);
+// 			delete head_;
+// 		}
+// 	}
+// private:
+// 	NodeType* generate_dummy_head() {
+// 		auto dummy_head = new NodeType(ElemType());
+// 		return dummy_head;
+// 	}
+// 	bool is_cyclic_;
+// 	bool has_dummy_head_;
+// 	NodeType* head_;
+// 	unordered_set<NodeType*> node_shared_;
+// };
+
+// template<class ElemType>
+// class DoubleLinkedList{
+// 	using NodeType = DoubleLNode<ElemType>;
+// public:
+// 	DoubleLinkedList(vector<ElemType>& v, bool has_dummy_head = true,bool is_cyclic = false):has_dummy_head_(has_dummy_head),
+// 	is_cyclic_(is_cyclic) {
+// 		if (v.size() == 0) throw runtime_error("empty vector...");
+// 		NodeType* node;
+// 		if (has_dummy_head) {
+// 			head_ = generate_dummy_head();
+// 			auto p = head_;
+// 			for (auto &item : v) {
+// 				node = new NodeType(item);
+// 				p->next = node;
+// 				node->prev = p;
+// 				p = p->next;
+// 			}
+// 		} else {
+// 			head_ = new NodeType(v[0]);
+// 			auto p = head_;
+// 			for (auto it = v.begin()+1; it != v.end(); it++) {
+// 				node = new NodeType(*it);
+// 				p->next = node;
+// 				node->prev = p;
+// 				p = p->next;
+// 			}
+// 		}
+// 		if (is_cyclic_) {
+// 			head_->prev = node;
+// 			node->next = head_;
+// 		}
+// 	}
+// 	NodeType* get_head() const{
+// 		return head_;
+// 	}
+// 	void set_head(NodeType* new_head) {
+// 		head_ = new_head;
+// 	}
+// 	friend ostream& operator<<(ostream& os, DoubleLinkedList& linked_list) {
+// 		auto p = linked_list.has_dummy_head_ ? linked_list.head_->next : linked_list.head_;
+// 		if (p == nullptr) {
+// 			os << "empty linked list" << endl;
+// 			return os;
+// 		}
+// 		if (!linked_list.is_cyclic_) {
+// 			while (p != nullptr) {
+// 				os << p->data << " ";
+// 				p = p->next;
+// 			}
+// 		} else {
+// 			do {
+// 				os << p->data << " ";
+// 				p = p->next;
+// 			} while (p != linked_list.head_);
+// 		}
+// 		os << endl;
+// 		return os;
+// 	}
+// 	~DoubleLinkedList() {
+// 		auto p = head_;
+// 		if (!is_cyclic_) {
+// 			while (p != nullptr) {
+// 				auto next_p = p->next;
+// 				delete p;
+// 				p = next_p;
+// 			}
+// 		} else {
+// 			p = head_->next;
+// 			if (p == nullptr) {
+// 				delete head_;
+// 				return;
+// 			}
+// 			do{
+// 				auto next_p = p->next;
+// 				delete p;
+// 				p = next_p;
+// 			}while (p != head_);
+// 			delete head_;
+// 		}
+// 	}
+// private:
+// 	NodeType* generate_dummy_head() {
+// 		NodeType* dummy_head = new NodeType(ElemType());
+// 		return dummy_head;
+// 	}
+// 	bool has_dummy_head_;
+// 	bool is_cyclic_;
+// 	NodeType* head_;
+// };
