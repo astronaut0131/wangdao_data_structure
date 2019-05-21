@@ -18,13 +18,13 @@ NodeType* find_common(NodeType* L1,NodeType* L2) {
 }
 int main() {
 	vector<int> v = {1,2,3};
-	SingleLinkedList<int> common(false);
+	LinkedList<LNode,int> common(false);
 	common.init(v);
 	// no head
-	SingleLinkedList<int> L1(false);
+	LinkedList<LNode,int> L1(false);
 	v = {3,2,1};
 	L1.init(v);
-	SingleLinkedList<int> L2(false);
+	LinkedList<LNode,int> L2(false);
 	v = {4,5,6};
 	L2.init(v);
 	auto L1_tail = L1.get_head();

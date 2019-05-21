@@ -1,7 +1,7 @@
 #include "LinkedList.hpp"
 using NodeType = LNode<int>;
 
-void remove_min(SingleLinkedList<int>& A){
+void remove_min(LinkedList<LNode,int>& A){
 	auto head = A.get_head();
 	NodeType* min_prev = nullptr;
 	int min_val = 0x3f3f3f3f;
@@ -23,7 +23,7 @@ void remove_min(SingleLinkedList<int>& A){
 
 int main() {
 	vector<int> v1 = {1,2,3,4,5,5,4,3,2,1};
-	SingleLinkedList<int> A(true,true);
+	LinkedList<LNode,int> A(true,true);
 	A.init(v1);
 	while(A.get_head()->next != A.get_head()) {
 		remove_min(A);

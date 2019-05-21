@@ -25,7 +25,7 @@ void reverse_list_B(NodeType* head) {
 }
 int main() {
 	vector<int> v = {1,1,2,3,4,5,1};
-	SingleLinkedList<int> linked_list;
+	LinkedList<LNode,int> linked_list;
 	linked_list.init(v);
 	//reverse_list_A(linked_list.get_head());
 	reverse_list_B(linked_list.get_head());

@@ -21,7 +21,7 @@ void remove_x(NodeType* head,int x) {
 int main() {
 	vector<int> v = {1,1,2,3,4,5,1};
 	//vector<int> v = {1,1,1};
-	SingleLinkedList<int> linked_list;
+	LinkedList<LNode,int> linked_list;
 	linked_list.init(v);
 	remove_x(linked_list.get_head(),1);
 	cout << linked_list << endl;

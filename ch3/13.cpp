@@ -1,7 +1,7 @@
 #include "LinkedList.hpp"
 using NodeType = LNode<int>;
 
-NodeType* merge_list(SingleLinkedList<int>& A, SingleLinkedList<int>& B) {
+NodeType* merge_list(LinkedList<LNode,int>& A, LinkedList<LNode,int>& B) {
 	auto dummy = generate_dummy_head<int>();
 	auto p1 = A.get_head();
 	auto p2 = B.get_head();
@@ -41,10 +41,10 @@ NodeType* merge_list(SingleLinkedList<int>& A, SingleLinkedList<int>& B) {
 int main() {
 	vector<int> v1 = {1,3,5,6,6,7,9,10};
 	vector<int> v2 = {0,2,4,5,6,8,9,11,12};
-	SingleLinkedList<int> linked_list(false);
-	SingleLinkedList<int> A(false);
+	LinkedList<LNode,int> linked_list(false);
+	LinkedList<LNode,int> A(false);
 	A.init(v1);
-	SingleLinkedList<int> B(false);
+	LinkedList<LNode,int> B(false);
 	B.init(v2);
 	auto result = merge_list(A,B);
 	print_linked_list<int>(result);
