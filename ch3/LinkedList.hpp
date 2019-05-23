@@ -2,14 +2,19 @@
 #include <stdexcept>
 #include <vector>
 #include <unordered_set>
+#include <type_traits>
 using std::vector;
 using std::endl;
 using std::ostream;
 using std::runtime_error;
 using std::cout;
 using std::unordered_set;
+using std::enable_if;
+using std::is_base_of;
+
 template<class ElemType>
 struct LNode {
+public:
 	LNode* next;
 	ElemType data;
 	LNode(ElemType data):data(data),next(nullptr) {}
@@ -44,6 +49,7 @@ LNode<ElemType>* generate_dummy_head() {
 
 template<class ElemType>
 struct DoubleLNode {
+public:
 	DoubleLNode* prev;
 	DoubleLNode* next;
 	ElemType data;
@@ -67,14 +73,14 @@ public:
 			cyclic_set_up(last_node);
 		}
 	}
-	NodeType* get_head() {
+	NodeType* get_head() const{
 		return head_;
 	}
 	void set_head(NodeType* new_head) {
 		if (new_head == nullptr) has_dummy_head_ = false;
 		head_ = new_head;
 	}
-	~LinkedListBase() {
+	virtual ~LinkedListBase() {
 		auto p = head_;
 		if (!is_cyclic_) {
 			while (p != nullptr) {
@@ -99,7 +105,7 @@ public:
 	}
 
 protected:
-	NodeType* generate_dummy_head() {
+	NodeType* generate_dummy_head() const {
 		auto dummy_head = new NodeType(ElemType());
 		return dummy_head;
 	}
@@ -128,7 +134,7 @@ protected:
 	virtual void cyclic_set_up(NodeType* node) {
 		node->next = head_;
 	}
-	friend ostream& operator<<(ostream& os, LinkedListBase& linked_list) {
+	friend ostream& operator<<(ostream& os, const LinkedListBase& linked_list) {
 		auto p = (linked_list.has_dummy_head_ ? linked_list.head_->next : linked_list.head_);
 		if (p == nullptr) {
 			os << "empty linked list" << endl;
@@ -156,23 +162,23 @@ protected:
 	NodeType* head_;
 };
 
-template<template <class...> class Node, class ElemType>
+template<template <class...> class Node, class ElemType,class = void>
 class LinkedList:public LinkedListBase<Node,ElemType>{
 public:
 	LinkedList() = delete;
 };
 
-template<class ElemType>
-class LinkedList<LNode,ElemType>:public LinkedListBase<LNode,ElemType>{
+template<template <class...> class Node, class ElemType>
+class LinkedList<Node,ElemType,typename enable_if<is_base_of<LNode<ElemType>,Node<ElemType>>::value>::type>:public LinkedListBase<Node,ElemType>{
 public:
-	LinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedListBase<LNode,ElemType>(has_dummy_head,is_cyclic){}
+	LinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedListBase<Node,ElemType>(has_dummy_head,is_cyclic){}
 };
 
-template<class ElemType>
-class LinkedList<DoubleLNode,ElemType>:public LinkedListBase<DoubleLNode,ElemType>{
+template<template <class...> class Node, class ElemType>
+class LinkedList<Node,ElemType,typename enable_if<is_base_of<DoubleLNode<ElemType>,Node<ElemType>>::value>::type>:public LinkedListBase<Node,ElemType>{
 public:
-	using NodeType = DoubleLNode<ElemType>;
-	LinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedListBase<DoubleLNode,ElemType>(has_dummy_head,is_cyclic){}
+	using NodeType = Node<ElemType>;
+	LinkedList(bool has_dummy_head = true, bool is_cyclic = false):LinkedListBase<Node,ElemType>(has_dummy_head,is_cyclic){}
 private:	
 	virtual NodeType* list_set_up(const vector<ElemType> &v) override{
 		NodeType* node;

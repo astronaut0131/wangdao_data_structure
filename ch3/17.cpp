@@ -1,7 +1,7 @@
 #include "LinkedList.hpp"
 using NodeType = DoubleLNode<int>;
 
-bool is_symmetry(LinkedList<DoubleLNode,int>& A) {
+bool is_symmetry(const LinkedList<DoubleLNode,int>& A) {
 	auto p1 = A.get_head()->next;
 	auto p2 = A.get_head()->prev;
 	while (!(p1 == p2 || p1->prev == p2)) {
