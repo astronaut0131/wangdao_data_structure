@@ -1,28 +1,33 @@
 #include "LinkedList.hpp"
-
-using NodeType = LNode<int>;
-void remove_min(NodeType* head) {
+#include <stack>
+bool is_symmetry(const LinkedList<LNode,int>& L,int n) {
+	std::stack<int> s;
+	auto head = L.get_head();
 	auto p = head->next;
-	auto prev = head;
-	NodeType* min_node = nullptr;
-	NodeType* min_prev = nullptr;
-	while (p != nullptr) {
-		if (min_node == nullptr || p->data < min_node->data) {
-			min_node = p;
-			min_prev = prev;
-		}
-		prev = p;
+	for (int i = 0; i < n/2; i++) {
+		s.push(p->data);
 		p = p->next;
 	}
-	min_prev->next = min_node->next;
-	delete min_node;
+	if (n % 2 != 0) p = p->next;
+	while(p != nullptr) {
+		if (s.empty()) return false;
+		int data = s.top();
+		s.pop();
+		if (data != p->data) return false;
+		p = p->next;
+	}
+	return s.empty();
 }
-
 int main() {
-	vector<int> v = {1,1,2,3,0,4,5,1};
-	LinkedList<LNode,int> linked_list;
-	linked_list.init(v);
-	remove_min(linked_list.get_head());
-	cout << linked_list << endl;
+	vector<int> v1 = {1,2,3,3,2,1};
+	vector<int> v2 = {1,2,3,2,1};
+	vector<int> v3 = {1,2,3,2,1,0};
+	LinkedList<LNode,int> L1,L2,L3;
+	L1.init(v1);
+	L2.init(v2);
+	L3.init(v3);
+	cout << is_symmetry(L1,v1.size()) << endl;
+	cout << is_symmetry(L2,v2.size()) << endl;
+	cout << is_symmetry(L3,v3.size()) << endl;
 	return 0;
 }
