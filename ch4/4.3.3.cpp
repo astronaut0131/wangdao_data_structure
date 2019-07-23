@@ -42,4 +42,5 @@ int main() {
 	auto bt = BinaryTree<int>();
 	bt.generate_test_tree();
 	post_order_traversal<int>(bt.getRoot());
+	return 0;
 }

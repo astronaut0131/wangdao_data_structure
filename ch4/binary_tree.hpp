@@ -1,8 +1,13 @@
 #include <iostream>
 #include <stack>
+#include <queue>
+#include <vector>
 
 using std::istream;
 using std::ostream;
+using std::queue;
+using std::vector;
+using std::stack;
 
 template <class T>
 struct BinTreeNode {
@@ -20,8 +25,12 @@ public:
 	~BinaryTree() { destroy(root); }
 	bool IsEmpty() { return root == nullptr; }
 	BinTreeNode<T> *getRoot() const { return root; }
-	BinTreeNode<T> setRoot(BinTreeNode<T>* r) { root = r; } 
+	void setRoot(BinTreeNode<T>* r) { root = r; } 
+	void levelTraversal(void (*visit)(BinTreeNode<T> *p));
 	void generate_test_tree();
+	void generate_test_tree_b();
+	void generate_test_tree_c();
+	vector<T> getPreSequence();
 protected:
 	void destroy(BinTreeNode<T>* subTree);
 	void CreateBinTree(istream& in,BinTreeNode<T> *&subTree);
@@ -30,6 +39,41 @@ protected:
 	friend istream& operator >> (istream& in, BinaryTree<T>& Tree);
 //	friend ostream& operator << (ostream& out,const BinaryTree<T>& Tree);
 };
+
+template <class T>
+vector<T> BinaryTree<T>::getPreSequence() {
+	vector<T> v;
+	if (!root) return v;
+	stack<BinTreeNode<T>*> s;
+	s.push(root);
+	while (!s.empty()) {
+		auto top = s.top();
+		s.pop();
+		v.push_back(top->data);
+		if (top->rightChild) {
+			s.push(top->rightChild);
+		}
+		if (top->leftChild) {
+			s.push(top->leftChild);
+		}
+	}
+	return v;
+}
+
+template <class T>
+void BinaryTree<T>::levelTraversal(void (*visit)(BinTreeNode<T> *p)) {
+	queue<BinTreeNode<T>*> q;
+	q.push(root);
+	while (!q.empty()) {
+		auto front = q.front();
+		visit(front);
+		q.pop();
+		if (front->leftChild)
+			q.push(front->leftChild);
+		if (front->rightChild)
+			q.push(front->rightChild);
+	}
+}
 
 template <class T>
 void BinaryTree<T>::destroy(BinTreeNode<T>* subTree) {
@@ -57,6 +101,7 @@ void BinaryTree<T>::destroy(BinTreeNode<T>* subTree) {
 
 template <>
 void BinaryTree<int>::generate_test_tree() {
+	destroy(root);
 	root = new BinTreeNode<int>(1);
 	root->leftChild = new BinTreeNode<int>(2);
 	root->rightChild = new BinTreeNode<int>(3);
@@ -64,6 +109,51 @@ void BinaryTree<int>::generate_test_tree() {
 	root->leftChild->rightChild = new BinTreeNode<int>(5);
 	root->leftChild->rightChild->leftChild = new BinTreeNode<int>(7);
 	root->rightChild->rightChild = new BinTreeNode<int>(6);
+}
+
+/*
+ *			 1
+ *		   /   \
+ *		  2     3
+ *		 / \   /
+ *		4   5 6  
+ *		 
+ */
+
+template<>
+void BinaryTree<int>::generate_test_tree_b() {
+	destroy(root);
+	root = new BinTreeNode<int>(1);
+	root->leftChild = new BinTreeNode<int>(2);
+	root->rightChild = new BinTreeNode<int>(3);
+	root->leftChild->leftChild = new BinTreeNode<int>(4);
+	root->leftChild->rightChild = new BinTreeNode<int>(5);
+	root->rightChild->leftChild = new BinTreeNode<int>(6);
+}
+/*
+ *			 1
+ *		   /   \
+ *		  2     3
+ *		 / \   / 
+ *		4   5 6  
+ *		 	 / \
+ *			2   1
+ *		   /     \
+ *        3       2
+*/
+template<>
+void BinaryTree<int>::generate_test_tree_c() {
+	destroy(root);
+	root = new BinTreeNode<int>(1);
+	root->leftChild = new BinTreeNode<int>(2);
+	root->rightChild = new BinTreeNode<int>(3);
+	root->leftChild->leftChild = new BinTreeNode<int>(4);
+	root->leftChild->rightChild = new BinTreeNode<int>(5);
+	root->rightChild->leftChild = new BinTreeNode<int>(6);
+	root->rightChild->leftChild->leftChild = new BinTreeNode<int>(2);
+	root->rightChild->leftChild->leftChild->leftChild = new BinTreeNode<int>(3);
+	root->rightChild->leftChild->rightChild = new BinTreeNode<int>(1);
+	root->rightChild->leftChild->rightChild->rightChild = new BinTreeNode<int>(2);
 }
 
 /*

@@ -1,33 +1,31 @@
 #include "binary_tree.hpp"
 #include <iostream>
 #include <queue>
-#include <stack>
 using namespace std;
+
 template <class T>
-void reverse_level_order_traverse(BinTreeNode<T>* root) {
+int findDoubleLinkedCount(BinTreeNode<T> *root) {
 	queue<BinTreeNode<T>*> q;
-	stack<BinTreeNode<T>*> s;
 	q.push(root);
+	int cnt = 0;
 	while (!q.empty()) {
 		auto front = q.front();
-		s.push(front);
 		q.pop();
-		if (front->leftChild) {
+		if (front->leftChild)
 			q.push(front->leftChild);
-		}
-		if (front->rightChild) {
+		if (front->rightChild)
 			q.push(front->rightChild);
-		}
+		if (front->leftChild && front->rightChild) {
+			cnt++;
+		} 
 	}
-	while (!s.empty()) {
-		auto top = s.top();
-		s.pop();
-		cout << top->data << " "; // visit it
-	}
+	return cnt;
 }
 int main() {
 	auto bt = BinaryTree<int>();
 	bt.generate_test_tree();
-	reverse_level_order_traverse<int>(bt.getRoot());
+	cout << findDoubleLinkedCount<int>(bt.getRoot()) << endl;
+	bt.generate_test_tree_b();
+	cout << findDoubleLinkedCount<int>(bt.getRoot()) << endl;
 	return 0;
 }

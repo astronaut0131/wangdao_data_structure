@@ -28,4 +28,5 @@ int main() {
 	auto bt = BinaryTree<int>();
 	bt.generate_test_tree();
 	cout << get_height<int>(bt.getRoot()) << endl;
+	return 0;
 }
