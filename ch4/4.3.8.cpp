@@ -21,11 +21,25 @@ int findDoubleLinkedCount(BinTreeNode<T> *root) {
 	}
 	return cnt;
 }
+
+template <class T>
+int findDoubleLinkedCountRecurs(BinTreeNode<T>* root) {
+	if (!root) return 0;
+	if (root->leftChild && root->rightChild)
+		return findDoubleLinkedCountRecurs(root->leftChild) + findDoubleLinkedCountRecurs(root->rightChild)+1;
+	else
+		return findDoubleLinkedCountRecurs(root->leftChild) + findDoubleLinkedCountRecurs(root->rightChild);
+}
+
 int main() {
 	auto bt = BinaryTree<int>();
 	bt.generate_test_tree();
 	cout << findDoubleLinkedCount<int>(bt.getRoot()) << endl;
+	cout << findDoubleLinkedCountRecurs<int>(bt.getRoot()) << endl;
+
 	bt.generate_test_tree_b();
 	cout << findDoubleLinkedCount<int>(bt.getRoot()) << endl;
+	cout << findDoubleLinkedCountRecurs<int>(bt.getRoot()) << endl;
+	
 	return 0;
 }

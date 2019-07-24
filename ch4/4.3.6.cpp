@@ -4,10 +4,6 @@
 using namespace std;
 BinTreeNode<int>* build_tree(const vector<int>& pre,const vector<int>& in,
 	int preL,int preR,int inL,int inR) {
-	if (preL < 0 || preR >=pre.size() || inL < 0 || inR >= in.size()
-		|| preL > preR || inL > inR) {
-		return nullptr;
-	}
 	auto root = new BinTreeNode<int>(pre[preL]);
 	int pos = -1;
 	for (int i = inL; i <= inR; i++) {
@@ -18,11 +14,19 @@ BinTreeNode<int>* build_tree(const vector<int>& pre,const vector<int>& in,
 	}
 	if (pos == -1) {
 		cout << "parse error" << endl;
-		//error
+		// invalid input sequence
 		exit(1);
 	}
-	root->leftChild = build_tree(pre,in,preL+1,preL+pos-inL,inL,pos-1);
-	root->rightChild = build_tree(pre,in,preL+pos-inL+1,preR,pos+1,inR);
+	int left_len = pos - inL;
+	int right_len = inR - pos;
+	if (left_len > 0)
+		root->leftChild = build_tree(pre,in,preL+1,preL+left_len,inL,pos-1);
+	else
+		root->leftChild = nullptr;
+	if (right_len > 0)
+		root->rightChild = build_tree(pre,in,preL+left_len+1,preR,pos+1,inR);
+	else
+		root->rightChild = nullptr;
 	return root;
 }
 void visit(BinTreeNode<int> *p) {
