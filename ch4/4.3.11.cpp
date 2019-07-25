@@ -12,6 +12,7 @@ void destroy(BinTreeNode<T>* root) {
 
 template <class T>
 void deleteSubtreeX(BinaryTree<T> &bt,T x) {
+	if (!root) return;
 	queue<BinTreeNode<T>*> q;
 	if (bt.getRoot()->data == x) {
 		destroy<T>(bt.getRoot());

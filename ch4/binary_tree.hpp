@@ -9,12 +9,17 @@ using std::queue;
 using std::vector;
 using std::stack;
 
+#define WEIGHT
+
 template <class T>
 struct BinTreeNode {
 	BinTreeNode(T x,BinTreeNode<T> *l = nullptr, BinTreeNode<T> *r = nullptr)
 		: data(x),leftChild(l),rightChild(r) {} 
 	T data;
 	BinTreeNode<T> *leftChild,*rightChild;
+#ifdef WEIGHT
+	int weight; 
+#endif
 };
 
 template <class T>
@@ -109,6 +114,11 @@ void BinaryTree<int>::generate_test_tree() {
 	root->leftChild->rightChild = new BinTreeNode<int>(5);
 	root->leftChild->rightChild->leftChild = new BinTreeNode<int>(7);
 	root->rightChild->rightChild = new BinTreeNode<int>(6);
+#ifdef WEIGHT
+	root->leftChild->leftChild->weight = 4;
+	root->leftChild->rightChild->leftChild->weight = 7;
+	root->rightChild->rightChild->weight = 6;
+#endif
 }
 
 /*
@@ -129,6 +139,11 @@ void BinaryTree<int>::generate_test_tree_b() {
 	root->leftChild->leftChild = new BinTreeNode<int>(4);
 	root->leftChild->rightChild = new BinTreeNode<int>(5);
 	root->rightChild->leftChild = new BinTreeNode<int>(6);
+#ifdef WEIGHT
+	root->leftChild->leftChild->weight = 4;
+	root->leftChild->rightChild->weight = 5;
+	root->rightChild->leftChild->weight = 6;
+#endif
 }
 /*
  *			 1
@@ -154,6 +169,12 @@ void BinaryTree<int>::generate_test_tree_c() {
 	root->rightChild->leftChild->leftChild->leftChild = new BinTreeNode<int>(3);
 	root->rightChild->leftChild->rightChild = new BinTreeNode<int>(1);
 	root->rightChild->leftChild->rightChild->rightChild = new BinTreeNode<int>(2);
+#ifdef WEIGHT
+	root->leftChild->leftChild->weight = 4;
+	root->leftChild->rightChild->weight = 5;
+	root->rightChild->leftChild->leftChild->leftChild->weight = 3;
+	root->rightChild->leftChild->rightChild->rightChild->weight = 2;
+#endif
 }
 
 /*
