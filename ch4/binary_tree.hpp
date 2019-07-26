@@ -30,7 +30,11 @@ public:
 	~BinaryTree() { destroy(root); }
 	bool IsEmpty() { return root == nullptr; }
 	BinTreeNode<T> *getRoot() const { return root; }
-	void setRoot(BinTreeNode<T>* r) { root = r; } 
+	void setRoot(BinTreeNode<T>* r) { 
+		if (root != r)
+			destroy(root);
+		root = r; 
+	} 
 	void levelTraversal(void (*visit)(BinTreeNode<T> *p));
 	void generate_test_tree();
 	void generate_test_tree_b();
