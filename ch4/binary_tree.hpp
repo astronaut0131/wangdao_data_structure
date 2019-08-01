@@ -10,6 +10,7 @@ using std::vector;
 using std::stack;
 
 #define WEIGHT
+#define COUNT
 
 template <class T>
 struct BinTreeNode {
@@ -19,6 +20,9 @@ struct BinTreeNode {
 	BinTreeNode<T> *leftChild,*rightChild;
 #ifdef WEIGHT
 	int weight; 
+#endif
+#ifdef COUNT
+	int subnode_cnt;
 #endif
 };
 
@@ -39,6 +43,8 @@ public:
 	void generate_test_tree();
 	void generate_test_tree_b();
 	void generate_test_tree_c();
+	void generate_test_BST();
+	void generate_test_AVL();
 	vector<T> getPreSequence();
 protected:
 	void destroy(BinTreeNode<T>* subTree);
@@ -125,6 +131,50 @@ void BinaryTree<int>::generate_test_tree() {
 #endif
 }
 
+/*		6
+ *	   / \
+ *    2   8  
+ *   / \ 
+ *  1   4
+ *     /
+ *    3
+ *
+ */
+template <>
+void BinaryTree<int>::generate_test_BST() {
+	destroy(root);
+	root = new BinTreeNode<int>(6);
+	root->rightChild = new BinTreeNode<int>(8);
+	root->leftChild = new BinTreeNode<int>(2);
+	root->leftChild->leftChild = new BinTreeNode<int>(1);
+	root->leftChild->rightChild = new BinTreeNode<int>(4);
+	root->leftChild->rightChild->leftChild = new BinTreeNode<int>(3);
+#ifdef COUNT
+	root->subnode_cnt = 5;
+	root->rightChild->subnode_cnt = 0;
+	root->leftChild->subnode_cnt = 3;
+	root->leftChild->leftChild->subnode_cnt = 0;
+	root->leftChild->rightChild->subnode_cnt = 1;
+	root->leftChild->rightChild->leftChild->subnode_cnt = 0;
+#endif
+}
+
+/*		6
+ *	   / \
+ *    2   8  
+ *   / \ 
+ *  1   4
+ */
+
+template <>
+void BinaryTree<int>::generate_test_AVL() {
+	destroy(root);
+	root = new BinTreeNode<int>(6);
+	root->rightChild = new BinTreeNode<int>(8);
+	root->leftChild = new BinTreeNode<int>(2);
+	root->leftChild->leftChild = new BinTreeNode<int>(1);
+	root->leftChild->rightChild = new BinTreeNode<int>(4);
+}
 /*
  *			 1
  *		   /   \
